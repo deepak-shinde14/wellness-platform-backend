@@ -1,16 +1,24 @@
 // backend/routes/goalRoutes.js
 const express = require('express');
+const { 
+    createGoal,
+    getUserGoals,
+    getGoal,
+    updateGoalProgress,
+    updateGoal,
+    deleteGoal,
+    getGoalStatistics
+} = require('../controllers/goalController');
 const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// Simple route to test authentication
-router.get('/goals', protect, async (req, res) => {
-    // req.user is available here due to the protect middleware
-    res.json({
-        message: `Welcome to your goals dashboard, ${req.user.username}!`,
-        userId: req.user.id,
-        goals: [{ id: 1, name: "Lose 5kg", progress: "50%" }] 
-    });
-});
+// Goal management routes
+router.post('/', protect, createGoal);
+router.get('/', protect, getUserGoals);
+router.get('/statistics', protect, getGoalStatistics);
+router.get('/:id', protect, getGoal);
+router.put('/:id/progress', protect, updateGoalProgress);
+router.put('/:id', protect, updateGoal);
+router.delete('/:id', protect, deleteGoal);
 
 module.exports = router;
