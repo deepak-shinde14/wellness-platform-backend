@@ -46,10 +46,7 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../frontend/build')));
-}
+
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
@@ -77,27 +74,20 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Wellness Platform API',
+        version: '1.0.0',
+        environment: process.env.NODE_ENV,
+        endpoints: {
+            auth: '/api/auth',
+            goals: '/api/goals',
+            consults: '/api/consults',
+            content: '/api/content',
+            user: '/api/user'
+        }
     });
-} else {
-    app.get('/', (req, res) => {
-        res.json({
-            message: 'Wellness Platform API',
-            version: '1.0.0',
-            environment: process.env.NODE_ENV,
-            endpoints: {
-                auth: '/api/auth',
-                goals: '/api/goals',
-                consults: '/api/consults',
-                content: '/api/content',
-                user: '/api/user'
-            }
-        });
-    });
-}
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
